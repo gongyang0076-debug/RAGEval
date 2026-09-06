@@ -1,0 +1,434 @@
+[
+  {
+    "doc_id": "order_policy",
+    "chunk_id": "order_policy_001",
+    "content": "星桥商城普通订单提交后须在30分钟内完成支付，超时未支付则自动关闭。关闭后不能恢复原订单，如仍需购买请重新下单，库存和价格以重新下单时为准。",
+    "metadata": {
+      "topic": "order",
+      "topic_label": "订单",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "order_policy",
+    "chunk_id": "order_policy_002",
+    "content": "未支付订单可在“我的订单”直接取消。已支付但尚未进入仓库配货的订单可申请取消，取消成功后按退款到账规则原路退回实付款；进入配货后无法直接取消，须联系在线客服尝试拦截，拦截不保证成功。",
+    "metadata": {
+      "topic": "order",
+      "topic_label": "订单",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "order_policy",
+    "chunk_id": "order_policy_003",
+    "content": "收货地址仅能在已支付且未进入仓库配货时通过订单详情修改，且新地址须在配送范围内。进入配货或已发货后不能在页面改址，应联系在线客服核实是否可拦截，不保证改址成功；未支付订单需取消后重新下单填写地址。",
+    "metadata": {
+      "topic": "order",
+      "topic_label": "订单",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "order_policy",
+    "chunk_id": "order_policy_004",
+    "content": "订单提交后不支持直接增加或删除商品，也不能修改购买数量。未支付时可取消并重新下单；已支付时须先按订单取消规则处理。重新下单不保留原订单的库存、价格或优惠。",
+    "metadata": {
+      "topic": "order",
+      "topic_label": "订单",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "order_policy",
+    "chunk_id": "order_policy_005",
+    "content": "同一订单的商品可能因仓库不同拆成多个包裹，拆包不会额外收取运费。用户可在订单详情分别查看每个包裹的物流单号；某个包裹签收不表示其他包裹已签收。",
+    "metadata": {
+      "topic": "order",
+      "topic_label": "订单",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "order_policy",
+    "chunk_id": "order_policy_006",
+    "content": "需要电子普通发票时，可在订单完成后30天内通过订单详情申请，提交有效抬头及邮箱后1个工作日内发送。企业抬头还需填写税号；开票金额为实际支付的商品金额，不含运费，优惠券抵扣部分不计入开票金额。",
+    "metadata": {
+      "topic": "order",
+      "topic_label": "订单",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "payment_policy",
+    "chunk_id": "payment_policy_001",
+    "content": "星桥商城支持微信支付、支付宝和境内银联借记卡支付，不支持货到付款或数字货币。每笔订单只能选择一种支付方式；优惠券属于优惠抵扣，不属于第二种支付方式。",
+    "metadata": {
+      "topic": "payment",
+      "topic_label": "支付",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "payment_policy",
+    "chunk_id": "payment_policy_002",
+    "content": "支付页面显示失败但银行或支付平台已扣款时，请先等待10分钟并刷新订单，不要立即重复付款。10分钟后订单仍未显示已支付，应联系在线客服并提供订单号和支付流水号，由客服核对支付状态。",
+    "metadata": {
+      "topic": "payment",
+      "topic_label": "支付",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "payment_policy",
+    "chunk_id": "payment_policy_003",
+    "content": "支付金额以结算页应付金额为准，由商品金额扣除优惠后加运费组成。优惠券只抵扣适用商品金额，不能抵扣运费；若金额不符，请在付款前返回结算页检查优惠使用条件。",
+    "metadata": {
+      "topic": "payment",
+      "topic_label": "支付",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "payment_policy",
+    "chunk_id": "payment_policy_004",
+    "content": "分期支付仅在结算页明确展示分期入口的订单中可选，期数、手续费和资格以该入口展示为准。知识库不提供统一分期期数或免息承诺；没有分期入口的订单不能由客服手动开通。",
+    "metadata": {
+      "topic": "payment",
+      "topic_label": "支付",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "payment_policy",
+    "chunk_id": "payment_policy_005",
+    "content": "支付密码由对应银行或支付平台管理，星桥商城客服不能查询、重置或代输支付密码。忘记密码应通过支付平台或银行的官方找回流程处理；不要向客服提供密码或短信验证码。",
+    "metadata": {
+      "topic": "payment",
+      "topic_label": "支付",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "payment_policy",
+    "chunk_id": "payment_policy_006",
+    "content": "同一订单如确认重复扣款，客服核实后会在1个工作日内发起多扣款项的原路退款，到账一般还需3至7个工作日。核实前应提供订单号及两笔支付流水号；订单支付失败但尚未确认重复扣款时，应先按支付状态核对流程处理。",
+    "metadata": {
+      "topic": "payment",
+      "topic_label": "支付",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "refund_policy",
+    "chunk_id": "refund_policy_001",
+    "content": "普通实物商品签收后7天内可申请无理由退货，前提是商品未使用且包装、配件和赠品完整。定制商品不适用无理由退货；质量问题应走质量售后流程，不能仅根据是否超过7天判断。",
+    "metadata": {
+      "topic": "refund",
+      "topic_label": "退款",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "refund_policy",
+    "chunk_id": "refund_policy_002",
+    "content": "退货申请审核通过后，用户须在7天内寄出商品并在售后页面填写物流单号，超时未寄出则申请关闭，可在仍符合售后条件时重新申请。请使用审核页面给出的退货地址，不要直接寄回原发货地址。",
+    "metadata": {
+      "topic": "refund",
+      "topic_label": "退款",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "refund_policy",
+    "chunk_id": "refund_policy_003",
+    "content": "退货包裹入库验收通过后，商城在48小时内发起退款，随后支付渠道一般需3至7个工作日到账。已支付订单取消成功后也在48小时内发起退款；发起退款不等于已经到账，周末和法定节假日不计入工作日。",
+    "metadata": {
+      "topic": "refund",
+      "topic_label": "退款",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "refund_policy",
+    "chunk_id": "refund_policy_004",
+    "content": "无理由退货的寄回运费由用户承担。经售后确认的商品质量问题或商家错发，寄回运费由商城承担；须先联系售后获取寄回方案，未经协商自行选择高价寄件的差额不承诺报销。",
+    "metadata": {
+      "topic": "refund",
+      "topic_label": "退款",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "refund_policy",
+    "chunk_id": "refund_policy_005",
+    "content": "部分商品退货时，现金退款按下单时分摊到退货商品的实际支付金额计算，不按商品原价退款。优惠券优惠按适用商品原价比例分摊，优惠券抵扣金额不退为现金；券是否返还按优惠券退回规则处理。",
+    "metadata": {
+      "topic": "refund",
+      "topic_label": "退款",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "refund_policy",
+    "chunk_id": "refund_policy_006",
+    "content": "整单退款成功后，订单使用的优惠券仅在仍处于原有效期内时自动退回账户，过期优惠券不返还也不延长有效期。部分退款不返还优惠券；积分抵扣的退回规则未在本知识库中定义。",
+    "metadata": {
+      "topic": "refund",
+      "topic_label": "退款",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "logistics_policy",
+    "chunk_id": "logistics_policy_001",
+    "content": "普通现货订单支付成功后通常在48小时内发货；预售商品按商品页标注的发货日期执行，不适用现货时限。发货指包裹交给承运商，不代表已送达，节假日特殊安排以商城公告为准。",
+    "metadata": {
+      "topic": "logistics",
+      "topic_label": "物流",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "logistics_policy",
+    "chunk_id": "logistics_policy_002",
+    "content": "星桥商城仅配送中国大陆地区，暂不支持港澳台及海外配送。部分偏远地区可能无法配送，是否可配送以结算页地址校验结果为准，客服不能绕过地址校验强制下单。",
+    "metadata": {
+      "topic": "logistics",
+      "topic_label": "物流",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "logistics_policy",
+    "chunk_id": "logistics_policy_003",
+    "content": "同一订单优惠后商品实付金额满99元免基础运费，不足99元收取8元基础运费。偏远地区若有附加运费，会在结算页单独展示，满99元不减免该附加费；会员免邮券按会员规则另行处理。",
+    "metadata": {
+      "topic": "logistics",
+      "topic_label": "物流",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "logistics_policy",
+    "chunk_id": "logistics_policy_004",
+    "content": "显示已发货但物流轨迹超过24小时未更新时，可联系在线客服并提供订单号，由客服向承运商核实。轨迹停滞不直接等于包裹丢失，知识库不承诺固定送达日期。",
+    "metadata": {
+      "topic": "logistics",
+      "topic_label": "物流",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "logistics_policy",
+    "chunk_id": "logistics_policy_005",
+    "content": "包裹显示已签收但本人未收到时，应先确认家人、门卫或驿站是否代收，再联系在线客服核实。请提供订单号和异常说明；在确认收到商品前，不要主动点击确认收货。",
+    "metadata": {
+      "topic": "logistics",
+      "topic_label": "物流",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "logistics_policy",
+    "chunk_id": "logistics_policy_006",
+    "content": "收货时发现外包装破损，应拍照留存包装、面单及商品状态；商品明显损坏时可拒收并联系在线客服。已签收后发现破损，也应保留证据提交售后核实，是否退款或换货依据核实结果，不自动触发固定金额赔偿。",
+    "metadata": {
+      "topic": "logistics",
+      "topic_label": "物流",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "coupon_policy",
+    "chunk_id": "coupon_policy_001",
+    "content": "满减券的门槛按适用商品的优惠前商品金额计算，不含运费，也不包含不适用商品的金额。达到门槛并不代表一定可用，还须满足券的有效期、适用商品及互斥规则。",
+    "metadata": {
+      "topic": "coupon",
+      "topic_label": "优惠券",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "coupon_policy",
+    "chunk_id": "coupon_policy_002",
+    "content": "每笔订单最多使用一张商品优惠券，满减券和折扣券不能叠加。会员免邮券可与一张商品优惠券同时使用，但只抵扣基础运费；同一张商品优惠券不能拆分到多个订单使用。",
+    "metadata": {
+      "topic": "coupon",
+      "topic_label": "优惠券",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "coupon_policy",
+    "chunk_id": "coupon_policy_003",
+    "content": "优惠券须在券面标注的有效期内使用，到期时刻以商城系统北京时间为准。过期券自动失效，客服不能手动延期；具体截止日期和时间请查看“我的优惠券”中的券面信息。",
+    "metadata": {
+      "topic": "coupon",
+      "topic_label": "优惠券",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "coupon_policy",
+    "chunk_id": "coupon_policy_004",
+    "content": "新人券仅限完成手机号验证且没有成功支付订单的账户领取和使用，每个账户限领一次。取消未支付订单不会失去新人资格；存在成功支付订单后，即使后来退款，也不恢复新人资格。",
+    "metadata": {
+      "topic": "coupon",
+      "topic_label": "优惠券",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "coupon_policy",
+    "chunk_id": "coupon_policy_005",
+    "content": "优惠券在结算页不可选时，请依次检查适用商品、使用门槛、有效期和是否已选择其他商品券。若均符合但仍不可用，请联系在线客服并提供券名称与结算页截图；客服不会提供通用隐藏优惠码。",
+    "metadata": {
+      "topic": "coupon",
+      "topic_label": "优惠券",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "coupon_policy",
+    "chunk_id": "coupon_policy_006",
+    "content": "使用优惠券的未支付订单取消或支付超时关闭后，券在仍有效时自动释放回账户；若释放时已过期则不能再使用。已支付订单须按整单或部分退款的优惠券退回规则处理，取消未支付订单不等于已支付订单退款。",
+    "metadata": {
+      "topic": "coupon",
+      "topic_label": "优惠券",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "membership_policy",
+    "chunk_id": "membership_policy_001",
+    "content": "星桥会员为付费服务，每期30天，购买成功后立即生效，有效期以会员页面为准。会员身份不改变商品退货条件，也不保证优先发货；本知识库未列出会员售价，应以购买页展示为准。",
+    "metadata": {
+      "topic": "membership",
+      "topic_label": "会员与售后",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "membership_policy",
+    "chunk_id": "membership_policy_002",
+    "content": "每期星桥会员发放2张免邮券，均随该期会员到期失效。每单最多用1张，无商品金额门槛，仅抵扣8元以内的基础运费，不抵扣偏远地区附加费；可与一张商品优惠券同时使用。",
+    "metadata": {
+      "topic": "membership",
+      "topic_label": "会员与售后",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "membership_policy",
+    "chunk_id": "membership_policy_003",
+    "content": "普通实物商品签收后15天内发现质量问题，可从订单详情提交照片或视频申请售后。审核确认质量问题后可办理退货或换货；定制商品也可申请质量售后，超过15天则按商品保修说明处理，不保证所有商品都支持同一期限。",
+    "metadata": {
+      "topic": "membership",
+      "topic_label": "会员与售后",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "membership_policy",
+    "chunk_id": "membership_policy_004",
+    "content": "换货申请审核通过且原商品入库验收通过后，有库存时通常在48小时内寄出替换商品。缺货时客服会与用户协商等待或退款；换货不支持更换为不同款式商品，需换款时应按退货条件退货后另行购买。",
+    "metadata": {
+      "topic": "membership",
+      "topic_label": "会员与售后",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "membership_policy",
+    "chunk_id": "membership_policy_005",
+    "content": "在线客服服务时间为每日09:00至21:00，入口是商城“我的—在线客服”。非服务时间可留言，客服在下一个服务时段处理；本知识库未提供客服电话，也未承诺留言会在固定分钟数内回复。",
+    "metadata": {
+      "topic": "membership",
+      "topic_label": "会员与售后",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  },
+  {
+    "doc_id": "membership_policy",
+    "chunk_id": "membership_policy_006",
+    "content": "星桥会员默认不自动续费，到期后须用户主动购买下一期。再次购买仅开通新的30天服务期，不承诺保留上期未使用权益；上期未使用的免邮券随上期到期失效，不能结转。",
+    "metadata": {
+      "topic": "membership",
+      "topic_label": "会员与售后",
+      "source": "星桥商城虚构客服手册",
+      "version": "1.0",
+      "synthetic": true
+    }
+  }
+]

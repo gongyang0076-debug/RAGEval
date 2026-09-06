@@ -1,0 +1,39 @@
+{
+  "status": "FAIL",
+  "simulation": true,
+  "checks": [
+    {
+      "metric": "recall_at_k",
+      "passed": false,
+      "reasons": [
+        "recall_at_k: 1 -> 0.739583; below min 0.85"
+      ]
+    },
+    {
+      "metric": "mrr",
+      "passed": false,
+      "reasons": [
+        "mrr: 0.875 -> 0.75; below min 0.8"
+      ]
+    },
+    {
+      "metric": "hallucination_rate",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "metric": "evaluation_success_rate",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "metric": "latency",
+      "passed": true,
+      "reasons": []
+    }
+  ],
+  "reasons": [
+    "recall_at_k: 1 -> 0.739583; below min 0.85",
+    "mrr: 0.875 -> 0.75; below min 0.8"
+  ]
+}

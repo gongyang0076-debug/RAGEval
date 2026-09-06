@@ -1,0 +1,14 @@
+# Ratios are in [0,1]; latency is milliseconds and max_increase=0.2 means +20%.
+# MOCK values cannot pass this live profile.
+allow_synthetic: false
+thresholds:
+  recall_at_3:
+    min: 0.85
+  mrr:
+    min: 0.8
+  hallucination_rate:
+    max: 0.1
+  evaluation_success_rate:
+    min: 0.95
+  latency:
+    max_increase: 0.2

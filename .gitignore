@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.venv-*/
+venv/
+
+# Tests and tools
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.cache/
+models/
+chroma/
+chroma_db/
+*.safetensors
+pytorch_model*.bin
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Additional model/database caches and local credentials
+*.onnx
+*.gguf
+*.pt
+*.pth
+*.sqlite3
+.streamlit/secrets.toml
+*.pem
+*.key
+*.log
+*.tmp
+
+# Runtime outputs default to private; reviewed examples only.
+/artifacts/**
+!/artifacts/**/
+!/artifacts/README.md
+!/artifacts/comparison/baseline.json
+!/artifacts/evaluation/attempt1/case_results.json
+!/artifacts/evaluation/attempt1/latest_report.json
+!/artifacts/evaluation/case_results.json
+!/artifacts/evaluation/latest_report.json
+!/artifacts/evaluation/sprint6/case_results.json
+!/artifacts/evaluation/sprint6/latest_report.json
+!/artifacts/sprint4/retrieval_benchmark.json
+!/artifacts/sprint5/live_judge_smoke.json
+!/artifacts/sprint7/evaluation/case_results.json
+!/artifacts/sprint7/evaluation/latest_report.json
+!/artifacts/sprint7/live_judge_validation.json
+!/artifacts/sprint7/provider_probe.json
+!/artifacts/sprint8/baseline.json
+!/artifacts/sprint8/baseline_snapshot.json
+!/artifacts/sprint8/candidate.json
+!/artifacts/sprint8/comparison.json
+!/artifacts/sprint8/current_report_gate.json
+!/artifacts/sprint8/gate_fail.json
+!/artifacts/sprint8/gate_pass.json
+!/artifacts/sprint8/pytest.txt
+!/artifacts/sprint9/export/evaluation_report.json
+!/artifacts/sprint9/export/evaluation_report.xlsx
+!/artifacts/sprint9/pytest.txt

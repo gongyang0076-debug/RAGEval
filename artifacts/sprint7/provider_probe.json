@@ -1,0 +1,59 @@
+[
+  {
+    "model": "glm-4.7-flash",
+    "status": "FAIL",
+    "error": {
+      "category": "rate_limit",
+      "message": "RateLimitError: rate_limit (HTTP 429)",
+      "trace": {
+        "model": "glm-4.7-flash",
+        "base_url": "https://open.bigmodel.cn/api/paas/v4",
+        "timeout_seconds": 30.0,
+        "max_attempts": 1,
+        "thinking": null,
+        "retry_count": 0,
+        "latency_ms": 2037.2906000120565,
+        "attempts": [
+          {
+            "attempt": 1,
+            "latency_ms": 1244.7222999762744,
+            "error_type": "RateLimitError",
+            "category": "rate_limit",
+            "status_code": 429,
+            "provider_code": "1305",
+            "retryable": true,
+            "retry_delay_seconds": 0.0
+          }
+        ]
+      }
+    }
+  },
+  {
+    "model": "glm-4-flash-250414",
+    "status": "SUCCESS",
+    "result": {
+      "text": "After 30 minutes.",
+      "trace": {
+        "model": "glm-4-flash-250414",
+        "base_url": "https://open.bigmodel.cn/api/paas/v4",
+        "timeout_seconds": 30.0,
+        "max_attempts": 1,
+        "thinking": null,
+        "retry_count": 0,
+        "latency_ms": 998.729299986735,
+        "attempts": [
+          {
+            "attempt": 1,
+            "latency_ms": 458.0403999425471,
+            "error_type": null,
+            "category": null,
+            "status_code": null,
+            "provider_code": null,
+            "retryable": false,
+            "retry_delay_seconds": 0.0
+          }
+        ]
+      }
+    }
+  }
+]

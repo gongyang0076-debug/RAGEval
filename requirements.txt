@@ -1,0 +1,11 @@
+pydantic>=2.10,<3
+python-dotenv>=1.0,<2
+pytest>=8.3,<9
+sentence-transformers>=5.2,<6
+chromadb>=1.5,<2
+openai>=2.0,<3
+PyYAML>=6.0,<7
+streamlit>=1.54,<2
+openpyxl>=3.1,<4
+altair>=5.0,<7
+pandas>=2.0,<4

@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+# Data/report versions depend on exact bytes. Preserve existing line endings.
+/data/**/*.json -text
+/artifacts/**/*.json -text
+*.png binary
+*.xlsx binary

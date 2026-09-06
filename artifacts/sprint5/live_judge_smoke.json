@@ -1,0 +1,40 @@
+{
+  "prompt_version": "judge_v1",
+  "samples": [
+    {
+      "case_id": "smoke_supported",
+      "query": "订单多久未支付会关闭？",
+      "expected_answer": "30分钟未支付自动关闭。",
+      "retrieved_context": "订单提交后30分钟未支付自动关闭。",
+      "rag_answer": "订单提交后30分钟未支付会自动关闭。",
+      "answerable": true
+    },
+    {
+      "case_id": "smoke_context_conflict",
+      "query": "订单多久未支付会关闭？",
+      "expected_answer": "30分钟未支付自动关闭。",
+      "retrieved_context": "订单提交后60分钟未支付自动关闭。",
+      "rag_answer": "订单提交后60分钟未支付会自动关闭。",
+      "answerable": true
+    },
+    {
+      "case_id": "smoke_hallucination",
+      "query": "订单多久未支付会关闭？",
+      "expected_answer": "30分钟未支付自动关闭。",
+      "retrieved_context": "订单提交后30分钟未支付自动关闭。",
+      "rag_answer": "30分钟未支付会自动关闭，商城还会自动赔付100元。",
+      "answerable": true
+    },
+    {
+      "case_id": "smoke_unanswerable_fabrication",
+      "query": "会员售价是多少？",
+      "expected_answer": "知识库未提供会员售价，无法确定。",
+      "retrieved_context": "会员有效期30天。本知识库未提供会员售价。",
+      "rag_answer": "会员售价是每期9.9元。",
+      "answerable": false
+    }
+  ],
+  "results": [],
+  "status": "NOT RUN",
+  "reason": "Missing Judge configuration: JUDGE_API_KEY, JUDGE_BASE_URL, JUDGE_MODEL"
+}

@@ -1,0 +1,32 @@
+{
+  "status": "PASS",
+  "simulation": true,
+  "checks": [
+    {
+      "metric": "recall_at_k",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "metric": "mrr",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "metric": "hallucination_rate",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "metric": "evaluation_success_rate",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "metric": "latency",
+      "passed": true,
+      "reasons": []
+    }
+  ],
+  "reasons": []
+}

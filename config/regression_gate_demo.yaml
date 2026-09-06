@@ -1,0 +1,13 @@
+# Only for the deterministic Sprint 8 simulation, never a live quality gate.
+allow_synthetic: true
+thresholds:
+  recall_at_k:
+    min: 0.85
+  mrr:
+    min: 0.8
+  hallucination_rate:
+    max: 0.1
+  evaluation_success_rate:
+    min: 0.95
+  latency:
+    max_increase: 0.2

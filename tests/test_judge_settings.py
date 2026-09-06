@@ -1,0 +1,47 @@
+from dataclasses import replace
+
+import pytest
+
+from config.judge import JudgeSettings, load_judge_settings
+from config.settings import ConfigurationError
+
+
+def test_environment_and_dotenv_precedence_without_exposing_key(tmp_path, monkeypatch):
+    values = {
+        "JUDGE_API_KEY": "test-only-key", "JUDGE_BASE_URL": "https://example.invalid/v1", "JUDGE_MODEL": "test-judge",
+        "JUDGE_MAX_ATTEMPTS": "2", "JUDGE_TIMEOUT_SECONDS": "15", "JUDGE_RESPONSE_FORMAT": "json_schema",
+    }
+    for key in values:
+        monkeypatch.delenv(key, raising=False)
+    env_file = tmp_path / ".env"
+    env_file.write_text("\n".join(f"{key}={value}" for key, value in values.items()), encoding="utf-8")
+    settings = load_judge_settings(env_file)
+    settings.validate()
+    assert settings.api_key == "test-only-key"
+    assert settings.model == "test-judge"
+    assert settings.base_url == "https://example.invalid/v1"
+    assert settings.max_attempts == 2
+    assert settings.timeout_seconds == 15
+    assert settings.response_format == "json_schema"
+    assert "test-only-key" not in repr(settings)
+    monkeypatch.setenv("JUDGE_MODEL", "external-judge")
+    assert load_judge_settings(env_file).model == "external-judge"
+
+
+@pytest.mark.parametrize("changes,variable", [
+    ({"max_attempts": 0}, "JUDGE_MAX_ATTEMPTS"), ({"max_attempts": 6}, "JUDGE_MAX_ATTEMPTS"),
+    ({"max_attempts": True}, "JUDGE_MAX_ATTEMPTS"), ({"timeout_seconds": 0}, "JUDGE_TIMEOUT_SECONDS"),
+    ({"timeout_seconds": float("nan")}, "JUDGE_TIMEOUT_SECONDS"), ({"timeout_seconds": 121}, "JUDGE_TIMEOUT_SECONDS"),
+    ({"response_format": "invalid"}, "JUDGE_RESPONSE_FORMAT"),
+])
+def test_bounded_configuration(changes, variable):
+    settings = JudgeSettings(api_key="fake", base_url="https://example.invalid", model="fake")
+    with pytest.raises(ConfigurationError, match=variable):
+        replace(settings, **changes).validate()
+
+
+@pytest.mark.parametrize("variable", ["JUDGE_MAX_ATTEMPTS", "JUDGE_TIMEOUT_SECONDS"])
+def test_invalid_numeric_environment_has_clear_error(monkeypatch, variable):
+    monkeypatch.setenv(variable, "not-a-number")
+    with pytest.raises(ConfigurationError, match=variable):
+        load_judge_settings(None)

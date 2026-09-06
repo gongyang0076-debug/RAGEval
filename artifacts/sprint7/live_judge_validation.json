@@ -1,0 +1,90 @@
+{
+  "timestamp": "2026-09-05T14:06:21.776408+00:00",
+  "prompt_version": "judge_v2",
+  "samples": [
+    {
+      "case_id": "smoke_supported",
+      "query": "订单多久未支付会关闭？",
+      "expected_answer": "30分钟未支付自动关闭。",
+      "retrieved_context": "订单提交后30分钟未支付自动关闭。",
+      "rag_answer": "订单提交后30分钟未支付会自动关闭。",
+      "answerable": true
+    },
+    {
+      "case_id": "smoke_context_conflict",
+      "query": "订单多久未支付会关闭？",
+      "expected_answer": "30分钟未支付自动关闭。",
+      "retrieved_context": "订单提交后60分钟未支付自动关闭。",
+      "rag_answer": "订单提交后60分钟未支付会自动关闭。",
+      "answerable": true
+    },
+    {
+      "case_id": "smoke_hallucination",
+      "query": "订单多久未支付会关闭？",
+      "expected_answer": "30分钟未支付自动关闭。",
+      "retrieved_context": "订单提交后30分钟未支付自动关闭。",
+      "rag_answer": "30分钟未支付会自动关闭，商城还会自动赔付100元。",
+      "answerable": true
+    },
+    {
+      "case_id": "smoke_unanswerable_fabrication",
+      "query": "会员售价是多少？",
+      "expected_answer": "知识库未提供会员售价，无法确定。",
+      "retrieved_context": "会员有效期30天。本知识库未提供会员售价。",
+      "rag_answer": "会员售价是每期9.9元。",
+      "answerable": false
+    },
+    {
+      "case_id": "supported_refund",
+      "query": "退款退到哪里？",
+      "expected_answer": "原路退回。",
+      "retrieved_context": "退款只支持原支付渠道退回。",
+      "rag_answer": "退款将原路退回。",
+      "answerable": true
+    },
+    {
+      "case_id": "supported_tracking",
+      "query": "在哪里查看物流？",
+      "expected_answer": "订单详情页。",
+      "retrieved_context": "订单详情页展示物流信息。",
+      "rag_answer": "请在订单详情页查看。",
+      "answerable": true
+    },
+    {
+      "case_id": "wrong_refund",
+      "query": "退款退到哪里？",
+      "expected_answer": "原路退回。",
+      "retrieved_context": "退款只支持原支付渠道退回。",
+      "rag_answer": "退到任意指定银行卡。",
+      "answerable": true
+    },
+    {
+      "case_id": "invented_compensation",
+      "query": "包裹延误会赔钱吗？",
+      "expected_answer": "没有赔偿承诺，无法确定。",
+      "retrieved_context": "包裹延误时请联系人工客服核查。",
+      "rag_answer": "每延误一天赔100元。",
+      "answerable": false
+    },
+    {
+      "case_id": "proper_refusal",
+      "query": "会员多少钱？",
+      "expected_answer": "未提供价格，无法确定。",
+      "retrieved_context": "会员有效期30天。",
+      "rag_answer": "知识库未提供会员售价，无法确定。",
+      "answerable": false
+    },
+    {
+      "case_id": "refusal_with_fabrication",
+      "query": "会员多少钱？",
+      "expected_answer": "未提供价格，无法确定。",
+      "retrieved_context": "会员有效期30天。",
+      "rag_answer": "无法确定，但官方一般是9.9元。",
+      "answerable": false
+    }
+  ],
+  "results": [],
+  "judge_model": null,
+  "status": "LIVE JUDGE NOT AVAILABLE",
+  "reason": "Missing Judge configuration: JUDGE_API_KEY, JUDGE_BASE_URL, JUDGE_MODEL"
+}

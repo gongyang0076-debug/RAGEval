@@ -1,0 +1,42 @@
+{
+  "status": "FAIL",
+  "simulation": true,
+  "checks": [
+    {
+      "metric": "recall_at_3",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "metric": "mrr",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "metric": "hallucination_rate",
+      "passed": false,
+      "reasons": [
+        "hallucination_rate: synthetic/MOCK metric cannot pass a live gate"
+      ]
+    },
+    {
+      "metric": "evaluation_success_rate",
+      "passed": false,
+      "reasons": [
+        "evaluation_success_rate: synthetic/MOCK metric cannot pass a live gate"
+      ]
+    },
+    {
+      "metric": "latency",
+      "passed": false,
+      "reasons": [
+        "latency: synthetic/MOCK metric cannot pass a live gate"
+      ]
+    }
+  ],
+  "reasons": [
+    "hallucination_rate: synthetic/MOCK metric cannot pass a live gate",
+    "evaluation_success_rate: synthetic/MOCK metric cannot pass a live gate",
+    "latency: synthetic/MOCK metric cannot pass a live gate"
+  ]
+}

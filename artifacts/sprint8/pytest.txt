@@ -1,0 +1,16 @@
+........................................................................ [ 21%]
+........................................................................ [ 43%]
+........................................................................ [ 65%]
+........................................................................ [ 87%]
+..........................................                               [100%]
+============================== warnings summary ===============================
+..\python\Lib\site-packages\chromadb\telemetry\opentelemetry\__init__.py:128
+  <python-env>\Lib\site-packages\chromadb\telemetry\opentelemetry\__init__.py:128: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    if asyncio.iscoroutinefunction(f):
+
+tests/test_retriever.py: 20 warnings
+  <python-env>\Lib\site-packages\chromadb\api\models\CollectionCommon.py:155: DeprecationWarning: legacy embedding function config
+    return load_collection_configuration_from_json(self._model.configuration_json)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+330 passed, 21 warnings in 8.75s
