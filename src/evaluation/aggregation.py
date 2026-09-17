@@ -1,3 +1,5 @@
+# 文件作用：把逐条结果按检索、生成、安全和工程表现分别汇总。
+# 为什么有它：每类指标分母不同，不能把未评估或不可回答的题随意当作零分。
 """Stage-specific denominators; failed and unassessed cases remain visible."""
 
 from collections.abc import Sequence
@@ -10,6 +12,8 @@ from .models import (
 )
 
 
+# 做什么：分别汇总检索、生成、安全和工程指标。
+# 为什么需要：各指标使用对应有效样本，失败和不可回答题不能混成零分。
 def aggregate_results(results: Sequence[CaseEvaluationResult]) -> EvaluationSummary:
     if len({row.case_id for row in results}) != len(results):
         raise ValueError("Cannot aggregate duplicate case_id values")

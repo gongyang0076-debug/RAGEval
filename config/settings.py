@@ -1,3 +1,5 @@
+# 文件作用：读取 RAG、Embedding 和 Chroma 的运行配置，并检查必要参数。
+# 为什么有它：让密钥、模型和路径通过环境配置切换，不散落在业务代码里。
 """Load configuration explicitly; importing this module has no side effects."""
 
 import os
@@ -7,10 +9,14 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+# 这个类：表示缺少或填写错误的运行配置。
+# 为什么需要：让调用者识别配置问题而非误当网络故障。
 class ConfigurationError(ValueError):
     """Required service configuration is missing or invalid."""
 
 
+# 这个类：保存数据、检索与生成模型的运行参数。
+# 为什么需要：集中管理环境差异。
 @dataclass(frozen=True)
 class Settings:
     data_dir: Path
@@ -28,6 +34,8 @@ class Settings:
     generation_timeout: float = 60.0
     rag_thinking: str | None = None
 
+    # 做什么：创建配置后检查生成超时、重试和可选 thinking 参数。
+    # 为什么需要：阻止非法参数进入模型调用。
     def __post_init__(self) -> None:
         if isinstance(self.generation_timeout, bool) or not 0 < self.generation_timeout <= 120:
             raise ConfigurationError("RAG_GENERATION_TIMEOUT_SECONDS must be in (0, 120]")
@@ -40,6 +48,8 @@ class Settings:
                 or not 0 < self.rag_retry_delay_seconds <= 30):
             raise ConfigurationError("RAG_RETRY_DELAY_SECONDS must be a number greater than 0 and at most 30")
 
+    # 做什么：检查生成模型的密钥、地址和模型名称是否齐全。
+    # 为什么需要：仅检索不必配置 API，但生成前必须给出明确错误。
     def require_llm(self) -> None:
         missing = [
             name for name, value in (
@@ -55,6 +65,8 @@ class Settings:
             )
 
 
+# 做什么：读取并转换数据路径、检索和生成服务配置。
+# 为什么需要：集中管理不同运行环境的参数。
 def load_settings(env_file: str | Path | None = ".env") -> Settings:
     """Read optional dotenv values without overriding the process environment."""
     if env_file is not None:

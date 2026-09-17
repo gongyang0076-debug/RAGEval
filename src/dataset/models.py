@@ -1,3 +1,5 @@
+# 文件作用：规定知识块、评测题、检索结果和 RAG 输出应该包含哪些字段。
+# 为什么有它：让各模块交换相同结构的数据，尽早发现字段缺失和非法值。
 """Shared data contracts; no retrieval, generation, or evaluation logic."""
 
 from typing import Annotated, Any
@@ -9,6 +11,8 @@ from src.llm.models import ProviderTrace
 NonEmptyString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
+# 这个类：保存一块知识资料的编号、内容和元数据。
+# 为什么需要：检索与标注都需要明确的资料单位。
 class CorpusDocument(BaseModel):
     """One corpus chunk; several chunks may share the same doc_id."""
 
@@ -20,6 +24,8 @@ class CorpusDocument(BaseModel):
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
+# 这个类：保存一道题、标准答案、相关块及可回答性。
+# 为什么需要：评测系统需要知道输入和预期行为。
 class EvalCase(BaseModel):
     """One labeled query; relevant_doc_ids references corpus chunk_id values."""
 
@@ -36,6 +42,8 @@ class EvalCase(BaseModel):
     variant_group: NonEmptyString | None = None
 
 
+# 这个类：保存一条实际检索结果的编号、内容、分数和排名。
+# 为什么需要：指标需要对齐 chunk_id 并使用排名。
 class RetrievedDocument(BaseModel):
     """A chunk-level hit; higher scores indicate greater relevance."""
 
@@ -48,6 +56,8 @@ class RetrievedDocument(BaseModel):
     rank: int = Field(ge=1, strict=True)
 
 
+# 这个类：保存被测系统的检索结果、答案、耗时和调用轨迹。
+# 为什么需要：评测层不必依赖 RAG 的内部实现。
 class RAGResult(BaseModel):
     """Output of a RAG run, including retrieval and generation latency."""
 

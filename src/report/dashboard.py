@@ -1,3 +1,5 @@
+# 文件作用：用 Streamlit 展示总览、指标、回归比较、单题详情和下载入口。
+# 为什么有它：让不读代码的人也能查看评测证据，并明确识别 MOCK 报告。
 """Report visualization only: no Runner, Retriever, or LLM client imports."""
 
 import os
@@ -15,17 +17,23 @@ ROOT = Path(__file__).resolve().parents[2]
 GREEN = "#285C4D"
 
 
+# 做什么：将指标格式化为普通小数、百分比或 N/A。
+# 为什么需要：缺失值不能显示成零分。
 def _fmt(value, percent=False):
     if value is None:
         return "N/A"
     return f"{value:.1%}" if percent else f"{value:.3f}"
 
 
+# 做什么：把一组指标画成页面卡片。
+# 为什么需要：让用户快速看到关键汇总。
 def _cards(values):
     for column, (label, value) in zip(st.columns(len(values)), values):
         column.metric(label, value, border=True)
 
 
+# 做什么：把比较对象转换成带方向、来源和原因的表格行。
+# 为什么需要：页面能够清楚展示改善、退步和不可比情况。
 def regression_rows(comparison):
     return [dict(metric=name, baseline=item.baseline_value, candidate=item.candidate_value,
                  delta=item.delta,
@@ -34,6 +42,8 @@ def regression_rows(comparison):
             for name, item in comparison.metrics.items()]
 
 
+# 做什么：读取或上传基线，显示差值并执行配置好的门禁。
+# 为什么需要：让用户在页面查看版本是否满足要求及失败原因。
 def _regression(report, catalog, artifacts):
     st.subheader("Regression")
     st.caption("当前报告作为 candidate；指标方向与门禁结论分别展示。")
@@ -82,6 +92,8 @@ def _regression(report, catalog, artifacts):
         st.error(f"Gate 配置无效：{exc}")
 
 
+# 做什么：按条件筛选并展示单题的答案、资料、评分和错误。
+# 为什么需要：让整体分数能追溯到具体证据。
 def _case_detail(report, answers):
     st.subheader("Case detail")
     category_col, status_col, hallucination_col = st.columns(3)
@@ -135,6 +147,8 @@ def _case_detail(report, answers):
                      errors=[e.model_dump(mode="json") for e in row.errors], retry_count=row.retry_count))
 
 
+# 做什么：绘制报告总览、检索生成指标、图表、比较和导出入口。
+# 为什么需要：把机器可读的报告转成可操作的评测看板。
 def render_report(report, catalog, artifacts):
     notice = mode_notice(report)
     if report.judge_mode == "MOCK" or report.rag_mode == "MOCK" or report.quality_metrics_are_synthetic:
@@ -204,6 +218,8 @@ def render_report(report, catalog, artifacts):
                           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 
 
+# 做什么：设置页面并从本地或上传内容选取报告后展示。
+# 为什么需要：提供只读网页入口，不启动 RAG 或模型评测。
 def main():
     st.set_page_config(page_title="RAGEval · Evaluation Dashboard", page_icon="📊", layout="wide")
     st.markdown("""<style>

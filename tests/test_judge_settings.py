@@ -1,3 +1,5 @@
+# 文件作用：测试裁判环境配置读取、优先级和参数边界。
+# 为什么有它：让缺失或非法配置在真正访问模型前清楚报错。
 from dataclasses import replace
 
 import pytest
@@ -6,6 +8,8 @@ from config.judge import JudgeSettings, load_judge_settings
 from config.settings import ConfigurationError
 
 
+# 做什么：验证 .env 与进程环境变量优先级且配置表示不暴露密钥。
+# 为什么需要：保证环境切换正确并保护敏感值。
 def test_environment_and_dotenv_precedence_without_exposing_key(tmp_path, monkeypatch):
     values = {
         "JUDGE_API_KEY": "test-only-key", "JUDGE_BASE_URL": "https://example.invalid/v1", "JUDGE_MODEL": "test-judge",
@@ -28,6 +32,8 @@ def test_environment_and_dotenv_precedence_without_exposing_key(tmp_path, monkey
     assert load_judge_settings(env_file).model == "external-judge"
 
 
+# 做什么：验证尝试次数、超时和输出模式边界。
+# 为什么需要：非法配置要在请求前失败。
 @pytest.mark.parametrize("changes,variable", [
     ({"max_attempts": 0}, "JUDGE_MAX_ATTEMPTS"), ({"max_attempts": 6}, "JUDGE_MAX_ATTEMPTS"),
     ({"max_attempts": True}, "JUDGE_MAX_ATTEMPTS"), ({"timeout_seconds": 0}, "JUDGE_TIMEOUT_SECONDS"),
@@ -40,6 +46,8 @@ def test_bounded_configuration(changes, variable):
         replace(settings, **changes).validate()
 
 
+# 做什么：验证环境变量不是合法数字时错误明确。
+# 为什么需要：帮助使用者定位配置项而不是面对底层转换异常。
 @pytest.mark.parametrize("variable", ["JUDGE_MAX_ATTEMPTS", "JUDGE_TIMEOUT_SECONDS"])
 def test_invalid_numeric_environment_has_clear_error(monkeypatch, variable):
     monkeypatch.setenv(variable, "not-a-number")

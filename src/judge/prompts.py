@@ -1,3 +1,5 @@
+# 文件作用：保存不同版本的裁判规则，并把规则和待评数据组装成请求消息。
+# 为什么有它：让正确性、忠实性和拒答的评分依据有明确版本、便于追溯。
 """Versioned judging instructions; rubric/schema changes require a new version."""
 
 import json
@@ -41,6 +43,8 @@ reason 用简短中文说明关键依据或缺陷；不要输出长篇推理过�
 """
 
 
+# 做什么：按 Prompt 版本选取相应评分字段模型。
+# 为什么需要：不同版本的输出要求不能混用。
 def verdict_model(prompt_version: str):
     if prompt_version == "judge_v1":
         return JudgeVerdict
@@ -49,6 +53,8 @@ def verdict_model(prompt_version: str):
     raise ValueError(f"Unknown Judge prompt version: {prompt_version}")
 
 
+# 做什么：把评分规则、JSON Schema 和本题输入组装成模型消息。
+# 为什么需要：统一每次判卷的任务边界和输出要求。
 def build_messages(judge_input: JudgeInput, prompt_version: str = PROMPT_VERSION) -> list[dict[str, str]]:
     schema = json.dumps(verdict_model(prompt_version).model_json_schema(), ensure_ascii=False)
     instructions = JUDGE_V1

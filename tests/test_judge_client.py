@@ -1,3 +1,5 @@
+# 文件作用：测试裁判请求参数、结构化输出、有限重试、错误分类和元数据。
+# 为什么有它：不调用真实模型也能覆盖合法、非法和超时等接口分支。
 import json
 from dataclasses import replace
 from types import SimpleNamespace
@@ -17,28 +19,40 @@ from src.judge.prompts import PROMPT_VERSION
 from tests.provider_fakes import SDKFixtureProvider
 
 
+# 做什么：按需要注入 SDK 替身并创建裁判客户端。
+# 为什么需要：让测试调用真实校验逻辑而不使用外部模型。
 def make_judge(settings, sdk=None, **kwargs):
     provider = SDKFixtureProvider(settings, sdk) if sdk is not None else None
     return LLMJudgeClient(settings, provider, **kwargs)
 
 
+# 做什么：拦截同步 HTTP 请求。
+# 为什么需要：防止单元测试意外产生真实模型调用。
 @pytest.fixture(autouse=True)
 def forbid_real_http(monkeypatch):
+    # 做什么：任何实际网络发送都触发断言失败。
+    # 为什么需要：及时发现测试依赖没有替换干净。
     def forbidden(*args, **kwargs):
         raise AssertionError("Judge unit tests must not make real HTTP requests")
     monkeypatch.setattr(httpx.Client, "send", forbidden)
 
 
+# 做什么：提供只用于测试的裁判配置。
+# 为什么需要：测试不需要或暴露真实 API 密钥。
 @pytest.fixture
 def settings():
     return JudgeSettings(api_key="test-only-secret", base_url="https://example.invalid/v1", model="mock-judge")
 
 
+# 做什么：构造问题、答案和上下文一致的标准评分输入。
+# 为什么需要：供正常和异常测试复用一个明确起点。
 @pytest.fixture
 def judge_input():
     return JudgeInput(case_id="case-1", query="多久关闭？", expected_answer="30分钟。", retrieved_context="30分钟关闭。", rag_answer="30分钟。", answerable=True)
 
 
+# 做什么：生成可覆盖字段的裁判 JSON 文本。
+# 为什么需要：方便逐项测试缺字段、越界或幻觉约束。
 def output(**changes):
     return json.dumps({
         "answer_correctness": 5, "faithfulness": 5, "answer_relevance": 5,
@@ -47,10 +61,14 @@ def output(**changes):
     }, ensure_ascii=False)
 
 
+# 做什么：将原始文本包装成模型响应结构。
+# 为什么需要：模拟 SDK 输出而不发请求。
 def completion(raw):
     return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=raw))])
 
 
+# 做什么：验证正常判卷的参数、Prompt、结果和运行元数据。
+# 为什么需要：确保评分来自预期请求且可完整追溯。
 def test_normal_judge_uses_sdk_settings_prompt_schema_and_preserves_metadata(settings, judge_input):
     raw = output()
     sdk = Mock()
@@ -82,6 +100,8 @@ def test_normal_judge_uses_sdk_settings_prompt_schema_and_preserves_metadata(set
     assert JudgeResult.model_validate_json(result.model_dump_json()) == result
 
 
+# 做什么：验证 Schema 模式只要求模型返回评分字段。
+# 为什么需要：运行元数据应由程序记录而不是让模型编造。
 def test_structured_output_mode_uses_only_verdict_schema(settings, judge_input):
     sdk = Mock()
     sdk.chat.completions.create.return_value = completion(output())
@@ -96,6 +116,8 @@ def test_structured_output_mode_uses_only_verdict_schema(settings, judge_input):
     assert result.metadata.response_format == "json_schema"
 
 
+# 做什么：验证正确性与忠实性可以取不同分数。
+# 为什么需要：不能把有上下文依据等同于符合标准答案。
 def test_context_supported_but_incorrect_answer(settings, judge_input):
     sdk = Mock()
     sdk.chat.completions.create.return_value = completion(output(answer_correctness=0, faithfulness=5))
@@ -107,6 +129,8 @@ def test_context_supported_but_incorrect_answer(settings, judge_input):
     assert result.hallucination is False
 
 
+# 做什么：验证不可回答题仍提交裁判判断编造与拒答。
+# 为什么需要：排除检索指标不等于跳过答案安全评测。
 @pytest.mark.parametrize("fabricated", [False, True])
 def test_unanswerable_still_gets_judged(settings, fabricated):
     sdk = Mock()
@@ -124,6 +148,8 @@ def test_unanswerable_still_gets_judged(settings, fabricated):
     assert result.unsupported_claims == (["会员售价9.9元"] if fabricated else [])
 
 
+# 做什么：验证非法 JSON 或字段在有限次数后失败并保留历史。
+# 为什么需要：不能无限修复或丢失失败原文。
 @pytest.mark.parametrize("raw,category", [
     ("not JSON", "invalid_json"), ("```json\n{}\n```", "invalid_json"),
     ('{"reason":"a","reason":"b"}', "invalid_json"), ('{"score":NaN}', "invalid_json"),
@@ -146,6 +172,8 @@ def test_invalid_outputs_exhaust_finite_attempts_with_trace(settings, judge_inpu
     assert [entry.error_category for entry in failure.metadata.attempt_history] == [category, category]
 
 
+# 做什么：验证首次解析失败后重试成功保留两次输出。
+# 为什么需要：成功结果也需要说明之前发生过什么。
 def test_parse_failure_then_success_preserves_both_attempts(settings, judge_input):
     sdk = Mock()
     valid = output()
@@ -160,6 +188,8 @@ def test_parse_failure_then_success_preserves_both_attempts(settings, judge_inpu
     assert "invalid_json" in calls[1].kwargs["messages"][-1]["content"]
 
 
+# 做什么：验证缺评分字段后允许有限修复并记录原因。
+# 为什么需要：字段不全的第一次结果不能直接算成功。
 def test_missing_schema_field_then_retry_success(settings, judge_input):
     sdk = Mock()
     values = json.loads(output())
@@ -170,6 +200,8 @@ def test_missing_schema_field_then_retry_success(settings, judge_input):
     assert "completeness" in result.metadata.attempt_history[0].error_message
 
 
+# 做什么：验证不同 API 异常的分类和实际尝试上限。
+# 为什么需要：临时错误与永久错误应采取不同处理。
 @pytest.mark.parametrize("error_type,category,status", [
     (APITimeoutError, "timeout", None), (APIConnectionError, "connection", None),
     (AuthenticationError, "authentication", 401), (PermissionDeniedError, "permission", 403),
@@ -200,6 +232,8 @@ def test_api_errors_are_classified_and_retries_are_bounded(settings, judge_input
     assert "test-only-secret" not in details.model_dump_json()
 
 
+# 做什么：验证解析失败后再遇接口错误仍保留之前文本。
+# 为什么需要：跨阶段错误不能覆盖已有证据。
 def test_api_failure_after_parse_failure_keeps_prior_raw_output(settings, judge_input):
     sdk = Mock()
     request = httpx.Request("POST", "https://example.invalid")
@@ -211,6 +245,8 @@ def test_api_failure_after_parse_failure_keeps_prior_raw_output(settings, judge_
     assert error.value.details.category == "timeout"
 
 
+# 做什么：验证缺必填裁判配置时不创建服务客户端。
+# 为什么需要：及时提示使用者且避免无效外部调用。
 @pytest.mark.parametrize("field,env_name", [("api_key", "JUDGE_API_KEY"), ("base_url", "JUDGE_BASE_URL"), ("model", "JUDGE_MODEL")])
 def test_missing_configuration_is_clear(settings, field, env_name):
     with patch("src.judge.client.OpenAICompatibleProvider") as factory:
@@ -219,6 +255,8 @@ def test_missing_configuration_is_clear(settings, field, env_name):
         factory.assert_not_called()
 
 
+# 做什么：验证网络恢复和 JSON 修复累计占用同一预算。
+# 为什么需要：防止多层重试导致请求数量相乘。
 def test_api_retries_and_json_repairs_share_one_budget(settings, judge_input):
     sdk = Mock()
     response = httpx.Response(503, request=httpx.Request("POST", "https://example.invalid"))
@@ -230,6 +268,8 @@ def test_api_retries_and_json_repairs_share_one_budget(settings, judge_input):
     assert sdk.chat.completions.create.call_count == 3
 
 
+# 做什么：验证先坏 JSON 再接口错误仍受总预算限制。
+# 为什么需要：错误类型转换不能重置尝试次数。
 def test_json_failure_then_api_failure_never_multiplies_budget(settings, judge_input):
     sdk = Mock()
     response = httpx.Response(503, request=httpx.Request("POST", "https://example.invalid"))
@@ -242,6 +282,8 @@ def test_json_failure_then_api_failure_never_multiplies_budget(settings, judge_i
     assert caught.value.details.metadata.attempt_history[0].raw_output == "broken"
 
 
+# 做什么：验证裁判等待超时后取消并保存超时轨迹。
+# 为什么需要：防止慢请求一直占用评测流程。
 def test_judge_request_deadline_cancels_and_preserves_timeout(settings, judge_input):
     import asyncio
     from time import perf_counter
@@ -249,6 +291,8 @@ def test_judge_request_deadline_cancels_and_preserves_timeout(settings, judge_in
     from tests.provider_fakes import async_sdk
     sdk = async_sdk()
     cancelled = []
+    # 做什么：模拟慢请求并在取消时留下标记。
+    # 为什么需要：证明超时不仅返回错误，还确实取消了等待。
     async def hanging(**kwargs):
         try:
             await asyncio.sleep(30)
@@ -267,6 +311,8 @@ def test_judge_request_deadline_cancels_and_preserves_timeout(settings, judge_in
     assert caught.value.details.metadata.retry_count == 0
 
 
+# 做什么：验证 JSON 对象模式透传到 SDK 并记录版本和原文。
+# 为什么需要：防止只改配置名却没有真正约束 GLM 输出。
 @pytest.mark.parametrize("prompt_version", ["judge_v1", "judge_v2"])
 def test_json_object_mode_reaches_sdk_and_keeps_metadata(settings, judge_input, prompt_version):
     raw = output(**({"refusal_detected": False} if prompt_version == "judge_v2" else {}))
@@ -283,6 +329,8 @@ def test_json_object_mode_reaches_sdk_and_keeps_metadata(settings, judge_input, 
     assert result.metadata.raw_output == raw
 
 
+# 做什么：验证 JSON 模式仍拒绝坏 JSON、缺字段和越界分数。
+# 为什么需要：服务端输出约束不能替代本地校验。
 @pytest.mark.parametrize("raw,category", [
     ("\x60\x60\x60json\n{}\n\x60\x60\x60", "invalid_json"),
     ("{}", "invalid_schema"),
@@ -302,6 +350,8 @@ def test_json_object_mode_still_validates_and_bounds_repair(settings, judge_inpu
                for call in sdk.chat.completions.create.call_args_list)
 
 
+# 做什么：验证 JSON 模式修复成功后仍记录首轮结构错误。
+# 为什么需要：避免成功重试掩盖接口输出问题。
 def test_json_object_mode_repair_success_preserves_invalid_attempt(settings, judge_input):
     sdk = Mock()
     sdk.chat.completions.create.side_effect = [completion("{}"), completion(output())]

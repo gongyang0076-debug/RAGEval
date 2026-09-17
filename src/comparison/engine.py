@@ -1,3 +1,5 @@
+# 文件作用：核对两份报告是否可比，并计算每项指标的变化方向。
+# 为什么有它：数据或有效样本变化时，单纯比较平均数可能误判进步。
 """Direction-aware deltas with explicit provenance and cohort compatibility."""
 
 from math import isclose
@@ -6,6 +8,8 @@ from .models import METRICS, MetricComparison, ReportComparison
 from .snapshot import to_snapshot
 
 
+# 做什么：对齐基线与候选版本，检查可比性后计算差值和变化方向。
+# 为什么需要：避免把不同数据、样本集合或裁判规则的分数直接当成版本进步。
 def compare_reports(baseline, candidate) -> ReportComparison:
     baseline, candidate = to_snapshot(baseline), to_snapshot(candidate)
     fields = ("dataset_version", "corpus_version", "embedding_model", "rag_model", "top_k",

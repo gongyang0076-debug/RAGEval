@@ -1,3 +1,5 @@
+# 文件作用：检查拟发布文件中的密钥、个人路径、模型缓存、体积和 Git 忽略规则。
+# 为什么有它：推送前检查哪些文件会公开，并确认正式数据不会被 Git 换行处理改变。
 """Audit the Git publication candidate set without printing secret values.
 
 Includes tracked files and non-ignored untracked files. Local .env values are
@@ -13,11 +15,15 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 
 
+# 做什么：执行项目目录中的只读 Git 查询并返回输出。
+# 为什么需要：发布检查统一获取候选文件、忽略规则和文件指纹。
 def git(*args):
     result = subprocess.run(["git", *args], cwd=ROOT, capture_output=True, check=True)
     return result.stdout
 
 
+# 做什么：扫描拟发布文件并检查敏感内容、缓存、体积和数据换行规则。
+# 为什么需要：发现不适合公开的文件时明确失败。
 def main():
     files = sorted(set(git("ls-files", "--cached", "--others", "--exclude-standard", "-z").decode().split("\0")) - {""})
     problems = []

@@ -1,3 +1,5 @@
+# 文件作用：只运行真实检索，对同一排名分别计算 K=1、3、5 并记录失败题。
+# 为什么有它：单独测量检索能力，避免生成和裁判影响这一阶段的结论。
 """One retrieval-only benchmark for the existing demo; no generation runner."""
 
 import argparse
@@ -14,6 +16,8 @@ from src.dataset import EvalCase, RetrievedDocument, load_corpus, load_dataset
 from .retrieval import aggregate_retrieval_metrics, evaluate_retrieval
 
 
+# 做什么：每道可回答题检索一次，再比较 K=1、3、5 的固定前缀。
+# 为什么需要：公平对照不同 K，并保留部分漏召回和完全未命中的区别。
 def benchmark_retrieval(
     cases: Sequence[EvalCase],
     retrieve: Callable[[str, int], list[RetrievedDocument]],
@@ -58,6 +62,8 @@ def benchmark_retrieval(
     }
 
 
+# 做什么：创建真实检索器并保存不同 K 的指标、失败题和版本信息。
+# 为什么需要：提供不调用生成模型的真实检索基准命令。
 def main() -> None:
     parser = argparse.ArgumentParser(description="Retrieval-only benchmark at K=1,3,5")
     parser.add_argument("--output", type=Path, default=Path("artifacts/sprint4/retrieval_benchmark.json"))

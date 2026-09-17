@@ -236,3 +236,19 @@ RAGEval/
 ```
 
 详细API、边界规则及配置示例见 [使用说明](docs/usage-guide.md)。本仓库当前面向源码运行与项目展示，未发布PyPI包；未附开源许可证，不宣称第三方已获得开源再分发授权。
+
+## 可选 Reranker 与检索对比
+
+新增两阶段检索：BGE Embedding + Chroma 初召回 10 条，再由 `BAAI/bge-reranker-base` 对“问题、知识块”联合评分，返回 Top-K。原有默认检索行为不变。
+
+```bash
+python -m src.metrics.rerank_benchmark --candidate-k 10 --output artifacts/reranker/comparison.json
+```
+
+此命令使用真实本地模型，不调用生成模型和 Judge；首次运行需要下载公开模型权重，缓存位于 Git 忽略的 `.cache/huggingface/`。支持 `--reranker-model` 指定其他兼容的单分数 CrossEncoder 模型或本地模型目录。设备和缓存目录沿用 Embedding 配置。
+
+报告在同一份 Corpus、Dataset 和同一次候选召回上比较 K=1、3、5 的 Recall、Precision 和截断 MRR@K，保存逐题候选、重排结果、改善和退步案例，以及预热后的检索/重排序耗时。不可回答题排除。初召回没有找到的资料，重排序无法补回。
+
+Python 中可以将 `RerankingRetriever(base_retriever, reranker, candidate_k=10)` 传入 `DemoRAGClient`，生成流程无需改变。最终 K 不得超过候选数量。原始向量分数为余弦相似度；重排序分数为原始 logit，越高越相关，不能当成概率，也不能与原始分数直接相减比较。
+
+详细用法和实验结论见 [重排序实验](docs/reranker-experiment.md)。

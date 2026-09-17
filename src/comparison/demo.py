@@ -1,3 +1,5 @@
+# 文件作用：离线构造两个模拟版本，生成对比结果和门禁通过、失败示例。
+# 为什么有它：不花真实模型调用成本即可演示比较流程，并明确区分模拟与真实结论。
 """Offline simulation: controlled ranking fixtures, not a new RAG benchmark."""
 
 import argparse
@@ -18,6 +20,8 @@ from .gate import apply_gate, load_gate_config
 from .snapshot import load_baseline, save_baseline
 
 
+# 做什么：按给定 K 构造可控排名、占位评分和模拟耗时的报告。
+# 为什么需要：在不调用模型时演示版本比较，结果明确标为 MOCK。
 def simulated_report(corpus_path: Path, dataset_path: Path, top_k: int) -> EvaluationReport:
     corpus = load_corpus(corpus_path)
     cases = load_dataset(dataset_path, corpus)
@@ -64,6 +68,8 @@ def simulated_report(corpus_path: Path, dataset_path: Path, top_k: int) -> Evalu
     )
 
 
+# 做什么：保存两个模拟版本、基线快照、差值和门禁示例。
+# 为什么需要：提供可以重复查看的完整比较流程，并确认没有修改正式数据。
 def run_demo(output: str | Path = "artifacts/sprint8"):
     output = Path(output)
     corpus_path, dataset_path = Path("data/corpus/ecommerce_v1.json"), Path("data/datasets/ecommerce_eval_v1.json")
@@ -85,6 +91,8 @@ def run_demo(output: str | Path = "artifacts/sprint8"):
     return comparison, passed, failed
 
 
+# 做什么：读取输出目录参数并运行离线版本比较演示。
+# 为什么需要：提供命令行入口，示例结果不符合预期时返回失败。
 def main():
     parser = argparse.ArgumentParser(description="SIMULATION ONLY: compare controlled top_k=3 and top_k=1 reports")
     parser.add_argument("--output", type=Path, default=Path("artifacts/sprint8"))

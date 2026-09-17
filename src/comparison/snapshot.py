@@ -1,3 +1,5 @@
+# 文件作用：把完整报告转换成版本快照，并提供基线保存和加载能力。
+# 为什么有它：留下稳定的历史参照，供后续候选版本进行对比。
 """Small versioned snapshots, saved atomically independently of live evaluation."""
 
 import json
@@ -12,10 +14,14 @@ from .models import BaselineSnapshot
 DEFAULT_BASELINE = Path("artifacts/comparison/baseline.json")
 
 
+# 这个类：表示基线快照无法读写或结构非法。
+# 为什么需要：历史参照损坏时给出统一可识别错误。
 class SnapshotError(ValueError):
     """A baseline file is unreadable or violates its contract."""
 
 
+# 做什么：从完整报告提取版本、指标和实际参与统计的题目集合。
+# 为什么需要：为基线保存与版本比较提供统一输入。
 def to_snapshot(report: EvaluationReport | BaselineSnapshot) -> BaselineSnapshot:
     if isinstance(report, BaselineSnapshot):
         return BaselineSnapshot.model_validate(report)
@@ -39,6 +45,8 @@ def to_snapshot(report: EvaluationReport | BaselineSnapshot) -> BaselineSnapshot
     )
 
 
+# 做什么：将快照写入指定文件并返回保存的对象。
+# 为什么需要：保留以后可对照的历史成绩。
 def save_baseline(report: EvaluationReport | BaselineSnapshot, path: str | Path = DEFAULT_BASELINE) -> BaselineSnapshot:
     snapshot = to_snapshot(report)
     try:
@@ -48,6 +56,8 @@ def save_baseline(report: EvaluationReport | BaselineSnapshot, path: str | Path 
     return snapshot
 
 
+# 做什么：检查快照 JSON 对象是否有同名字段。
+# 为什么需要：避免读取时自动覆盖造成歧义。
 def _unique_keys(pairs):
     result = {}
     for key, value in pairs:
@@ -57,6 +67,8 @@ def _unique_keys(pairs):
     return result
 
 
+# 做什么：读取快照并进行严格模型校验。
+# 为什么需要：拒绝损坏或不符合契约的历史参照。
 def load_baseline(path: str | Path = DEFAULT_BASELINE) -> BaselineSnapshot:
     try:
         data = json.loads(Path(path).read_text(encoding="utf-8"), object_pairs_hook=_unique_keys)

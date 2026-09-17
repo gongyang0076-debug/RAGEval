@@ -1,3 +1,5 @@
+# 文件作用：将知识块同步到 Chroma，并按问题返回带编号和排名的 Top-K 结果。
+# 为什么有它：为 Demo RAG 提供可持久化、可核对标注的本地检索能力。
 """Persistent local Chroma retrieval using explicitly supplied embeddings."""
 
 from collections.abc import Sequence
@@ -11,7 +13,11 @@ from src.dataset import CorpusDocument, DataValidationError, RetrievedDocument
 from .embeddings import SentenceTransformerEmbedder
 
 
+# 这个类：负责知识块索引与向量查询。
+# 为什么需要：保存并找出可以对齐标注的本地资料。
 class ChromaRetriever:
+    # 做什么：创建或打开持久化集合，并核对向量模型和距离配置。
+    # 为什么需要：避免把不同编码规则的向量混在同一个索引。
     def __init__(self, settings: Settings, embedder: SentenceTransformerEmbedder | None = None):
         self.embedder = embedder if embedder is not None else SentenceTransformerEmbedder(settings)
         self.client = chromadb.PersistentClient(
@@ -35,6 +41,8 @@ class ChromaRetriever:
                 "and index the corpus again."
             )
 
+    # 做什么：编码并插入或更新知识块，同时删除已不在语料中的旧块。
+    # 为什么需要：让向量库内容与当前 Corpus 保持一致。
     def index(self, corpus: Sequence[CorpusDocument]) -> int:
         """Sync this collection to the supplied corpus, removing obsolete chunks."""
         if not corpus:
@@ -53,6 +61,8 @@ class ChromaRetriever:
             self.collection.delete(ids=obsolete)
         return self.collection.count()
 
+    # 做什么：校验问题和 K，搜索向量并返回保留编号的排名结果。
+    # 为什么需要：向评测提供可与标注对齐且分数方向一致的检索输出。
     def retrieve(self, query: str, top_k: int = 3) -> list[RetrievedDocument]:
         if not isinstance(query, str) or not query.strip():
             raise ValueError("query must be a non-empty string")

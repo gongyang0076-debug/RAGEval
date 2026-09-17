@@ -1,3 +1,5 @@
+# 文件作用：扩展为十条人工样例，保存真实裁判结果或逐条错误。
+# 为什么有它：在全量评测前暴露格式、接口和评分问题，保留原始证据。
 """Sprint 7 live-only validation on ten synthetic examples, separate from Dataset."""
 
 import argparse
@@ -13,6 +15,8 @@ from .prompts import RUNNER_PROMPT_VERSION
 from .smoke import smoke_samples
 
 
+# 做什么：准备十条覆盖正确、错误、编造和拒答的人工样例。
+# 为什么需要：先用可核对的小样本检查真实裁判。
 def validation_samples():
     samples = smoke_samples()
     samples.extend([
@@ -32,6 +36,8 @@ def validation_samples():
     return samples
 
 
+# 做什么：加载真实配置并逐条判卷，保存成功结果或错误。
+# 为什么需要：不因单条失败丢失其余证据，缺配置时明确说明。
 def run_validation():
     samples = validation_samples()
     report = {"timestamp": datetime.now(timezone.utc).isoformat(), "prompt_version": RUNNER_PROMPT_VERSION,
@@ -53,6 +59,8 @@ def run_validation():
     return report
 
 
+# 做什么：接收保存路径并执行十条真实裁判验证。
+# 为什么需要：提供独立验证命令，失败时向调用者返回失败状态。
 def main():
     parser = argparse.ArgumentParser(description="Ten live Judge validation examples; never substitutes a mock")
     parser.add_argument("--output", type=Path, default=Path("artifacts/sprint7/live_judge_validation.json"))

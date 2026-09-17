@@ -1,3 +1,5 @@
+# 文件作用：读取阈值配置并逐项给出 PASS 或 FAIL 及原因。
+# 为什么有它：让版本验收按明确规则执行，缺指标和错误配置不能默认为通过。
 """Strict YAML thresholds and a fail-closed, deterministic regression gate."""
 
 from math import isclose
@@ -9,14 +11,20 @@ from pydantic import ValidationError
 from .models import GateCheck, GateConfig, GateResult, ReportComparison, metric_key
 
 
+# 这个类：表示门禁规则文件读取或校验失败。
+# 为什么需要：规则坏了不能被默认为通过。
 class GateConfigurationError(ValueError):
     """Invalid threshold file; must never be interpreted as an empty PASS gate."""
 
 
+# 这个类：给安全 YAML 解析器增加重复键检查。
+# 为什么需要：避免相同规则被静默覆盖。
 class _UniqueLoader(yaml.SafeLoader):
     pass
 
 
+# 做什么：解析 YAML 映射时拒绝重复或非字符串键。
+# 为什么需要：避免阈值规则被后面的同名配置悄悄覆盖。
 def _mapping(loader, node, deep=False):
     loader.flatten_mapping(node)
     result = {}
@@ -31,6 +39,8 @@ def _mapping(loader, node, deep=False):
 _UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _mapping)
 
 
+# 做什么：读取 YAML 并校验门禁规则。
+# 为什么需要：错误配置必须明确失败，不能退化成空规则通过。
 def load_gate_config(path: str | Path) -> GateConfig:
     try:
         return GateConfig.model_validate(yaml.load(Path(path).read_text(encoding="utf-8"), Loader=_UniqueLoader))
@@ -38,10 +48,14 @@ def load_gate_config(path: str | Path) -> GateConfig:
         raise GateConfigurationError(f"Invalid gate configuration {path}: {exc}") from exc
 
 
+# 做什么：在小数误差容忍范围之外判断是否超过界限。
+# 为什么需要：避免浮点尾差让恰好达标的指标误失败。
 def _exceeds(value, limit):
     return value > limit and not isclose(value, limit, rel_tol=0, abs_tol=1e-12)
 
 
+# 做什么：检查可比性、真实或模拟来源、K 和每项阈值，生成门禁结论。
+# 为什么需要：把验收要求转成可解释的 PASS 或 FAIL。
 def apply_gate(comparison: ReportComparison, config: GateConfig) -> GateResult:
     config = GateConfig.model_validate(config)
     checks = []

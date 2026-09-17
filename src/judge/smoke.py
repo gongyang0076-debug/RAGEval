@@ -1,3 +1,5 @@
+# 文件作用：构造四条人工样例，单独验证真实 Judge。
+# 为什么有它：接入裁判时先检查典型场景，未配置 API 时明确跳过而不编造结果。
 """Four hand-authored live Judge examples; explicitly skip missing configuration."""
 
 import argparse
@@ -12,6 +14,8 @@ from .models import JudgeInput
 from .prompts import PROMPT_VERSION
 
 
+# 做什么：构造四条容易人工判断的裁判样例。
+# 为什么需要：快速覆盖正确、有依据但答错、编造和不可回答场景。
 def smoke_samples() -> list[JudgeInput]:
     return [
         JudgeInput(case_id="smoke_supported", query="订单多久未支付会关闭？",
@@ -29,6 +33,8 @@ def smoke_samples() -> list[JudgeInput]:
     ]
 
 
+# 做什么：对四条样例运行真实裁判并记录结果或错误。
+# 为什么需要：先检查服务接入，未配置时不生成假结果。
 def run_live_smoke() -> dict:
     samples = smoke_samples()
     report = {"prompt_version": PROMPT_VERSION, "samples": [sample.model_dump() for sample in samples], "results": []}
@@ -48,6 +54,8 @@ def run_live_smoke() -> dict:
     return report
 
 
+# 做什么：执行四条冒烟验证并保存、打印结果。
+# 为什么需要：让用户不用跑整套数据集也能检查 Judge。
 def main() -> None:
     parser = argparse.ArgumentParser(description="Live Judge smoke on four synthetic examples")
     parser.add_argument("--output", type=Path, default=Path("artifacts/sprint5/live_judge_smoke.json"))

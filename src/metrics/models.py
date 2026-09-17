@@ -1,3 +1,5 @@
+# 文件作用：规定单题检索指标和整组检索汇总的数据格式。
+# 为什么有它：区分有分数的可回答题与应排除的不可回答题，避免错误统计。
 """Small, serializable retrieval metric records."""
 
 from typing import Annotated
@@ -10,6 +12,8 @@ from src.dataset.models import NonEmptyString
 Ratio = Annotated[float, Field(ge=0, le=1, allow_inf_nan=False)]
 
 
+# 这个类：保存单题指定 K 下的检索分数与块编号。
+# 为什么需要：分数必须能回查对应资料和参评状态。
 class RetrievalMetricResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -22,6 +26,8 @@ class RetrievalMetricResult(BaseModel):
     retrieved_chunk_ids: list[NonEmptyString]
     relevant_chunk_ids: list[NonEmptyString]
 
+    # 做什么：检查题目是否应有分数，以及结果数量是否超过 K。
+    # 为什么需要：不可回答题必须排除，缺标注或不完整分数不能参与普通聚合。
     @model_validator(mode="after")
     def check_participation(self) -> "RetrievalMetricResult":
         scores = (self.recall_at_k, self.precision_at_k, self.rr)
@@ -35,6 +41,8 @@ class RetrievalMetricResult(BaseModel):
         return self
 
 
+# 这个类：保存同一 K 下的检索宏平均与排除数量。
+# 为什么需要：避免把不相同的评测范围混在一起。
 class RetrievalMetricSummary(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

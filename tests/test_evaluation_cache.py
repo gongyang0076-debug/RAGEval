@@ -1,9 +1,13 @@
+# 文件作用：测试相同输入的缓存键稳定，以及输入和裁判配置变化后的失效。
+# 为什么有它：防止将旧答案或旧评分规则的结果错误复用。
 import pytest
 
 from src.evaluation.cache import JudgeCache
 from src.judge import JudgeInput
 
 
+# 做什么：验证相同输入和配置得到相同缓存键。
+# 为什么需要：保证重复评分能够可靠命中缓存。
 def test_cache_key_is_stable(tmp_path):
     cache = JudgeCache(tmp_path)
     value = JudgeInput(case_id="a", query="Question", expected_answer="Expected", retrieved_context="Context", rag_answer="Answer", answerable=True)
@@ -12,6 +16,8 @@ def test_cache_key_is_stable(tmp_path):
     assert len(cache.key(value, **identity)) == 64
 
 
+# 做什么：逐项修改评分输入或裁判身份并验证缓存键变化。
+# 为什么需要：旧结果不能跨答案、上下文或模型错误复用。
 @pytest.mark.parametrize("field,new_value", [
     ("query", "changed"), ("rag_answer", "changed"), ("retrieved_context", "changed"),
     ("expected_answer", "changed"), ("answerable", False), ("case_id", "different"),
@@ -30,6 +36,8 @@ def test_cache_invalidates_every_input_and_judge_identity(tmp_path, field, new_v
     assert cache.key(value, **identity) != before
 
 
+# 做什么：验证提示词内容变化会使缓存失效。
+# 为什么需要：即使版本名没改也不能继续使用旧规则评分。
 def test_prompt_text_change_invalidates_cache(tmp_path, monkeypatch):
     from src.judge import prompts
     cache = JudgeCache(tmp_path)

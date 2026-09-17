@@ -1,3 +1,5 @@
+# 文件作用：把已有报告导出成完整 JSON 和四张 Excel 工作表。
+# 为什么有它：方便分享与查看结果，同时处理长文本、非法字符和公式样式字符串。
 """Portable Python JSON/XLSX export of existing reports, with no metric calculation."""
 
 from io import BytesIO
@@ -14,16 +16,22 @@ from src.evaluation.models import EvaluationReport
 from .data import as_json, expected_answers, mode_notice
 
 
+# 做什么：将完整报告编码成 UTF-8 JSON 字节。
+# 为什么需要：网页下载与文件导出可以复用同一内容。
 def json_bytes(report: EvaluationReport) -> bytes:
     return report.model_dump_json(indent=2).encode("utf-8")
 
 
+# 做什么：转义 Excel 不接受的控制字符，并标明超长文本截断。
+# 为什么需要：避免导出文件损坏，完整原文仍保留在 JSON。
 def _text(value: str) -> str:
     # Excel/XML cannot store these controls. JSON remains the lossless source.
     value = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", lambda m: f"\\u{ord(m[0]):04x}", value)
     return value if len(value) <= 32767 else value[:32720] + " [TRUNCATED: see JSON export]"
 
 
+# 做什么：创建并格式化一张工作表，把文本明确写成字符串。
+# 为什么需要：让结果可读，并防止以等号开头的文本被当成公式。
 def _sheet(workbook, title, headers, rows, notice):
     sheet = workbook.create_sheet(title)
     sheet.sheet_view.showGridLines = False
@@ -67,6 +75,8 @@ def _sheet(workbook, title, headers, rows, notice):
     return sheet
 
 
+# 做什么：把版本、汇总、逐题、检索和裁判结果写入四张工作表。
+# 为什么需要：提供便于人工查看的 Excel，同时保留缺失值和模式提示。
 def excel_bytes(report: EvaluationReport, answers: dict[str, str] | None = None,
                 answer_warning: str | None = None) -> bytes:
     answers = answers or {}
@@ -126,6 +136,8 @@ def excel_bytes(report: EvaluationReport, answers: dict[str, str] | None = None,
     return result.getvalue()
 
 
+# 做什么：先写临时二进制文件，再替换目标文件。
+# 为什么需要：降低导出时留下半成品的风险。
 def _atomic_bytes(path: Path, content: bytes):
     path.parent.mkdir(parents=True, exist_ok=True)
     name = None
@@ -139,6 +151,8 @@ def _atomic_bytes(path: Path, content: bytes):
             Path(name).unlink()
 
 
+# 做什么：匹配标准答案并保存 JSON 与 Excel 两种报告。
+# 为什么需要：一次完成已有评测结果的分享与导出。
 def export_report(report: EvaluationReport, output: str | Path,
                   dataset_dir: str | Path = "data/datasets") -> tuple[Path, Path]:
     output = Path(output)

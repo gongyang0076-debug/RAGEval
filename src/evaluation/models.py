@@ -1,3 +1,5 @@
+# 文件作用：规定逐题结果、分项汇总和整份评测报告的数据结构。
+# 为什么有它：让成功、失败、缺失分数和运行版本都有固定位置可查询。
 """Serializable case outcomes and dataset-level evaluation reports."""
 
 from datetime import datetime
@@ -15,6 +17,8 @@ from src.llm.models import ProviderFailure
 Status = Literal["SUCCESS", "RAG_ERROR", "RETRIEVAL_ERROR", "JUDGE_ERROR", "TIMEOUT"]
 
 
+# 这个类：保存某一阶段的错误与相关调用详情。
+# 为什么需要：失败不能只留一个模糊状态。
 class CaseError(BaseModel):
     stage: Literal["rag", "retrieval", "judge"]
     status: Status
@@ -24,6 +28,8 @@ class CaseError(BaseModel):
     provider_failure: ProviderFailure | None = None
 
 
+# 这个类：保存一道题各阶段结果和执行状态。
+# 为什么需要：成功与失败都可以逐条追溯。
 class CaseEvaluationResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -46,6 +52,8 @@ class CaseEvaluationResult(BaseModel):
     retry_count: int = Field(default=0, ge=0)
 
 
+# 这个类：保存检索均分及有效、排除、不可用题数。
+# 为什么需要：解释检索分数的实际统计范围。
 class RetrievalSummary(BaseModel):
     evaluated_retrieval_cases: int
     excluded_unanswerable_cases: int
@@ -55,6 +63,8 @@ class RetrievalSummary(BaseModel):
     mrr: float | None
 
 
+# 这个类：保存有效 Judge 数量和四项平均评分。
+# 为什么需要：没有成功评分的题不应假装参与平均。
 class GenerationSummary(BaseModel):
     evaluated_judge_cases: int
     avg_correctness: float | None
@@ -63,6 +73,8 @@ class GenerationSummary(BaseModel):
     avg_completeness: float | None
 
 
+# 这个类：保存幻觉与拒答的数量和比例。
+# 为什么需要：让安全指标的分子分母清楚可查。
 class SafetySummary(BaseModel):
     evaluated_judge_cases: int
     hallucination_cases: int
@@ -73,6 +85,8 @@ class SafetySummary(BaseModel):
     refusal_accuracy: float | None
 
 
+# 这个类：保存总题数、成功失败、耗时和重试等。
+# 为什么需要：区分工程稳定性与答案质量。
 class EngineeringSummary(BaseModel):
     total_cases: int
     success_cases: int
@@ -84,6 +98,8 @@ class EngineeringSummary(BaseModel):
     failure_breakdown: dict[str, int] = Field(default_factory=dict)
 
 
+# 这个类：把四类汇总放在一起。
+# 为什么需要：报告和页面可以按同一结构读取总览。
 class EvaluationSummary(BaseModel):
     retrieval: RetrievalSummary
     generation: GenerationSummary
@@ -91,6 +107,8 @@ class EvaluationSummary(BaseModel):
     engineering: EngineeringSummary
 
 
+# 这个类：保存整次评测的版本、配置、汇总及逐题证据。
+# 为什么需要：生成可序列化、可比较的完整报告。
 class EvaluationReport(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

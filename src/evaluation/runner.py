@@ -1,3 +1,5 @@
+# 文件作用：串起数据加载、RAG、指标、Judge、缓存、失败记录和报告保存。
+# 为什么有它：把零散能力变成可批量执行的评测流程，并让单条失败不影响其余题目。
 """Sequential RAG evaluation with isolated case failures and explicit mock labeling."""
 
 import argparse
@@ -26,6 +28,8 @@ from .cache import JudgeCache, atomic_write_json
 from .models import CaseError, CaseEvaluationResult, EvaluationReport
 
 
+# 做什么：把各层异常转换成带阶段和错误类别的统一记录。
+# 为什么需要：让报告区分检索、生成、裁判和超时问题。
 def _case_error(stage: str, exc: Exception) -> CaseError:
     cause = exc.__cause__ if isinstance(exc, RAGRetrievalError) and exc.__cause__ else exc
     timeout = isinstance(cause, (TimeoutError, APITimeoutError))
@@ -47,7 +51,11 @@ def _case_error(stage: str, exc: Exception) -> CaseError:
     )
 
 
+# 这个类：连接 RAG、指标和 Judge 的批量调度器。
+# 为什么需要：让评测流程集中执行并隔离单题失败。
 class EvaluationRunner:
+    # 做什么：接收被测客户端、裁判、数据路径、缓存和运行身份。
+    # 为什么需要：集中连接依赖，允许单元测试替换外部服务。
     def __init__(self, rag_client: RAGClient, judge_client, *, corpus_path: str | Path,
                  embedding_model: str, rag_model: str, output_dir: str | Path = "artifacts/evaluation",
                  cache: JudgeCache | None = None, judge_mode: str = "LIVE", rag_mode: str = "LIVE", verbose: bool = False,
@@ -65,6 +73,8 @@ class EvaluationRunner:
         self.verbose = verbose
         self.execution_config = execution_config or {}
 
+    # 做什么：先读取匹配缓存，未命中时评分并保存成功结果。
+    # 为什么需要：减少重复请求，同时记录缓存异常和来源。
     def _judge(self, value: JudgeInput, row: CaseEvaluationResult):
         settings = self.judge_client.settings
         key = self.cache.key(
@@ -90,6 +100,8 @@ class EvaluationRunner:
                 row.cache_warning = warning
         return result
 
+    # 做什么：执行一条题的 RAG、指标和裁判，记录拒答、错误与耗时。
+    # 为什么需要：把单题成功和失败都保留，并隔离局部故障。
     def evaluate_case(self, case: EvalCase, top_k: int) -> CaseEvaluationResult:
         if type(top_k) is not int or top_k <= 0:
             raise ValueError("top_k must be a positive integer")
@@ -129,6 +141,8 @@ class EvaluationRunner:
         row.retry_count = row.rag_retry_count + row.judge_retry_count
         return row
 
+    # 做什么：逐条评测已校验的试卷，汇总后保存报告与明细。
+    # 为什么需要：形成完整实验结果，并防止运行期间数据版本发生变化。
     def evaluate_dataset(self, dataset_path: str | Path, top_k: int = 3) -> EvaluationReport:
         if type(top_k) is not int or top_k <= 0:
             raise ValueError("top_k must be a positive integer")
@@ -163,6 +177,8 @@ class EvaluationRunner:
         return report
 
 
+# 做什么：从环境配置创建真实检索器、RAG 和选定裁判后启动 Runner。
+# 为什么需要：给外部调用提供一个简单的完整评测入口。
 def evaluate_dataset(dataset_path: str | Path, top_k: int = 3, *, output: str | Path = "artifacts/evaluation",
                      judge_mode: str = "LIVE") -> EvaluationReport:
     settings = load_settings()
@@ -196,6 +212,8 @@ def evaluate_dataset(dataset_path: str | Path, top_k: int = 3, *, output: str | 
     return runner.evaluate_dataset(dataset_path, top_k)
 
 
+# 做什么：解析数据集、K、输出目录和裁判模式参数，打印运行结果。
+# 为什么需要：支持命令行自动化，并在存在失败题时返回非零退出码。
 def main() -> None:
     settings = load_settings()
     parser = argparse.ArgumentParser(description="Run full RAG evaluation, preserving all case outcomes")

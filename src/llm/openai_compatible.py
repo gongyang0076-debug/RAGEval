@@ -1,3 +1,5 @@
+# 文件作用：通过兼容 SDK 调用模型，并统一处理超时、错误分类和有限重试。
+# 为什么有它：把外部服务的不稳定性集中处理，避免每个业务模块重复实现。
 """Bounded transport retries and cancellable per-request deadlines."""
 
 import asyncio
@@ -18,6 +20,8 @@ from .provider import LLMProvider, ProviderError
 logger = logging.getLogger(__name__)
 
 
+# 做什么：解析 Retry-After 或采用有上限的退避等待。
+# 为什么需要：尊重服务端等待要求，超出本轮等待预算时停止。
 def retry_delay(header: str | None, fallback: float) -> float | None:
     """None means Retry-After exceeds the 30s wait budget; never retry early."""
     if header:
@@ -33,6 +37,8 @@ def retry_delay(header: str | None, fallback: float) -> float | None:
     return min(fallback, 30.0)
 
 
+# 做什么：根据异常、状态码和供应商错误码判断类别及是否可重试。
+# 为什么需要：认证或额度问题不应被当成临时网络故障反复请求。
 def classify(error: Exception, secret: str) -> tuple[str, int | None, str | None, bool]:
     status = getattr(error, "status_code", None)
     body = getattr(error, "body", None)
@@ -63,7 +69,11 @@ def classify(error: Exception, secret: str) -> tuple[str, int | None, str | None
     return category, status, code, False
 
 
+# 这个类：使用兼容 SDK 的具体模型访问实现。
+# 为什么需要：统一配置、超时和重试，隔离供应商调用细节。
 class OpenAICompatibleProvider(LLMProvider):
+    # 做什么：检查并保存服务地址、模型、超时、尝试预算和可选参数。
+    # 为什么需要：阻止非法配置进入 SDK，也避免地址携带敏感凭据。
     def __init__(self, *, api_key: str, base_url: str, model: str, timeout_seconds: float = 60,
                  max_attempts: int = 3, retry_delay_seconds: float = 5, thinking: str | None = None):
         if not all(value.strip() for value in (api_key, base_url, model)):
@@ -84,6 +94,8 @@ class OpenAICompatibleProvider(LLMProvider):
         self.timeout_seconds, self.max_attempts = timeout_seconds, max_attempts
         self.retry_delay_seconds, self.thinking = retry_delay_seconds, thinking
 
+    # 做什么：用 RAG 配置创建统一模型 Provider。
+    # 为什么需要：把生成服务配置转换集中在一处。
     @classmethod
     def from_rag_settings(cls, settings):
         settings.require_llm()
@@ -91,6 +103,8 @@ class OpenAICompatibleProvider(LLMProvider):
                    timeout_seconds=settings.generation_timeout, max_attempts=settings.rag_max_attempts,
                    retry_delay_seconds=settings.rag_retry_delay_seconds, thinking=settings.rag_thinking)
 
+    # 做什么：以同步接口启动内部异步请求，并限制调用预算。
+    # 为什么需要：让顺序 Runner 易于调用，同时不能扩大配置允许的尝试次数。
     def generate(self, messages, *, temperature=None, response_format=None, max_attempts=None):
         limit = self.max_attempts if max_attempts is None else max_attempts
         if type(limit) is not int or not 1 <= limit <= self.max_attempts:
@@ -98,6 +112,8 @@ class OpenAICompatibleProvider(LLMProvider):
         # A fresh async client per logical call avoids sharing a client across closed loops.
         return asyncio.run(self._generate(messages, temperature, response_format, limit))
 
+    # 做什么：执行 SDK 请求、单次超时取消、分类重试和退避。
+    # 为什么需要：模型服务不稳定时仍能受控结束并留下每次尝试。
     async def _generate(self, messages, temperature, response_format, limit):
         start = perf_counter()
         history = []
@@ -109,6 +125,8 @@ class OpenAICompatibleProvider(LLMProvider):
         if self.thinking is not None:
             options["extra_body"] = {"thinking": {"type": self.thinking}}
 
+        # 做什么：汇总模型参数、总耗时和全部请求记录。
+        # 为什么需要：成功响应和失败异常都携带一致的追溯信息。
         def trace():
             return ProviderTrace(model=self.model, base_url=self.base_url, timeout_seconds=self.timeout_seconds,
                                  max_attempts=limit, thinking=self.thinking, retry_count=len(history) - 1,
